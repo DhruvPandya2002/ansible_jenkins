@@ -1,18 +1,41 @@
-- name: Deploy Application
-  hosts: ec2
-  become: yes
+- name: Configure nginx web server
+  hosts: my-servers
+  become: true
+  become_user: root
+  become_method: sudo
   tasks:
-    - name: install git
-      apt:
-        name: git
-        state: present
-        update_cache: yes
-    - name: git clone
-      git:
-        repo: https://github.com/DhruvPandya2002/docker_jenkins.git
-        dest: /home/ubuntu/project
-    - name: Buils and Run
-      shell: |
-          cd /home/ubuntu/project
-          docker build -t my-app .
-          docker run -d -p 80:3000 my-app 
+  - name: update apt
+    apt:
+      update_cache: yes
+  - name: Install nginx
+    apt:
+      name: nginx
+      state: latest
+  - name: Start Nginx
+    service:
+      name: nginx
+      state: started
+      enabled: yes
+  - name: Deploy web app
+    copy:
+      src: index.html
+      dest: /var/www/html/
+
+# - name: Deploy Application
+#   hosts: ec2
+#   become: yes
+#   tasks:
+#     - name: install git
+#       apt:
+#         name: git
+#         state: present
+#         update_cache: yes
+#     - name: git clone
+#       git:
+#         repo: https://github.com/DhruvPandya2002/docker_jenkins.git
+#         dest: /home/ubuntu/project
+#     - name: Buils and Run
+#       shell: |
+#           cd /home/ubuntu/project
+#           docker build -t my-app .
+#           docker run -d -p 80:3000 my-app 
