@@ -1,0 +1,18 @@
+- name: Deploy Application
+  hosts: ec2
+  become: yes
+  tasks:
+    - name: install git
+      apt:
+        name: git
+        state: present
+        update_cache: yes
+    - name: git clone
+      git:
+        repo: https://github.com/DhruvPandya2002/docker_jenkins.git
+        dest: /home/ubuntu/project
+    - name: Buils and Run
+      shell: |
+          cd /home/ubuntu/project
+          docker build -t my-app .
+          docker run -d -p 80:3000 my-app 
